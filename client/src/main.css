@@ -1,0 +1,47 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Rubik', sans-serif;
+    font-weight: 400;
+}
+
+html, body, #app {
+    height: 100%;
+}
+
+.puzzle-btn {
+  background-image: linear-gradient(#f7f8fa ,#e7e9ec);
+  border-color: #adb1b8 #a2a6ac #8d9096;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 3px;
+  box-shadow: rgba(255,255,255,.6) 0 1px 0 inset;
+  box-sizing: border-box;
+  color: #0f1111;
+  cursor: pointer;
+  display: inline-block;
+  width: 100px;
+  height: 40px;
+  font-size: 17px;
+}
+
+.puzzle-btn:active {
+  border-bottom-color: #a2a6ac;
+}
+
+.puzzle-btn:active:hover {
+  border-bottom-color: #a2a6ac;
+}
+
+.puzzle-btn:hover {
+  border-color: #a2a6ac #979aa1 #82858a;
+}
+
+.puzzle-btn:hover {
+  border-color: rgb(54, 88, 225);
+  box-shadow: rgba(35, 30, 183, 0.5) 0 0 3px 2px;
+  outline: 0;
+}
