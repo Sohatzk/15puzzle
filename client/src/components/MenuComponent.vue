@@ -7,21 +7,30 @@
     <nav class="nav-links">
       <ul>
         <li><a href="#">Show history</a></li>
-        <li><a href="#">Log In</a></li>
+        <li>
+          <a 
+            @click="logIn"
+            href="#">
+              Log In
+          </a>
+        </li>
       </ul>
     </nav>
   </header>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
+import { defineComponent } from 'vue';
 
-@Options({
-  components: {}
+export default defineComponent({
+  name: 'MenuComponent',
+
+  methods: {
+    logIn(): void {
+      this.$emit('showLogInModal');
+    }
+  }
 })
-export default class Menu extends Vue {
-  msg!: string
-}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

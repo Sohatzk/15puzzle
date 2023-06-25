@@ -60,6 +60,10 @@ export default defineComponent({
       default: 15,
       type: Number,
     },
+    isLogInModalVisiable: {
+      default: false,
+      type: Boolean,
+    }
   },
 
   data() {
@@ -91,6 +95,14 @@ export default defineComponent({
         }
       },
     },
+
+    isLogInModalVisiable: {
+      handler() {
+        if (this.$props.isLogInModalVisiable) {
+          this.reset();
+        }
+      },
+    }
   },
 
   methods: {

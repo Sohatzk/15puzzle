@@ -1,24 +1,42 @@
 <template>
   <div class="app-container">
-    <Menu></Menu>
+    <MenuComponent
+      @showLogInModal="isLogInModalVisiable = true">
+    </MenuComponent>
     <div class="main-content-container">
-      <Board></Board>
+      <BoardComponent
+      :isLogInModalVisiable="isLogInModalVisiable"
+      >
+      </BoardComponent>
+      <LogInComponent
+        class="log-in-modal"
+        v-show="isLogInModalVisiable"
+        @closeLogInModal="isLogInModalVisiable = false">
+      </LogInComponent>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import Board from './components/board/BoardComponent.vue';
-import Menu from './components/MenuComponent.vue';
+import { defineComponent } from 'vue';
+import BoardComponent from "./components/board/BoardComponent.vue";
+import MenuComponent from "./components/MenuComponent.vue";
+import LogInComponent from "./components/LogInComponent.vue";
 
-@Options({
+export default defineComponent({
+  name: 'App',
   components: {
-    Menu,
-    Board
+    MenuComponent,
+    LogInComponent,
+    BoardComponent
+  },
+
+  data() {
+    return {
+      isLogInModalVisiable: false,
+    };
   },
 })
-export default class App extends Vue {}
 </script>
 
 <style>

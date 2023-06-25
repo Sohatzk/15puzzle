@@ -20,7 +20,7 @@ html, body, #app {
   border-radius: 3px;
   box-shadow: rgba(255,255,255,.6) 0 1px 0 inset;
   box-sizing: border-box;
-  color: #0f1111;
+  color: rgb(35, 51, 119);
   cursor: pointer;
   display: inline-block;
   width: 100px;
@@ -42,6 +42,6 @@ html, body, #app {
 
 .puzzle-btn:hover {
   border-color: rgb(54, 88, 225);
-  box-shadow: rgba(35, 30, 183, 0.5) 0 0 3px 2px;
+  box-shadow: rgba(136, 234, 225, 0.966) 0 0 1px 1px;
   outline: 0;
 }
