@@ -1,7 +1,9 @@
 export default class TimerModel {
-    hours: number;
-    minutes: number;
-    seconds: number;
+    public hours: number;
+
+    public minutes: number;
+    
+    public seconds: number;
 
     constructor(
         hours: number,

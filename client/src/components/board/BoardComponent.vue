@@ -8,8 +8,22 @@
         </button>
         <button class="puzzle-btn" @click="stop">Stop</button>
         <button class="puzzle-btn" @click="reset">Reset</button>
-        <button class="puzzle-btn" @click="reset">Save</button>
+        <button
+          class="puzzle-btn"
+          @click="showConfirmation = true"
+          :disabled="!puzzleSolved"
+        >
+          Save
+        </button>
       </div>
+      <ConfirmationComponent
+        v-if="showConfirmation"
+        @yesClick="saveButtonConfirmed"
+        @noClick="showConfirmation = false"
+        @close="showConfirmation = false"
+      >
+        <h5>Save result?</h5>
+      </ConfirmationComponent>
       <div id="board">
         <div v-for="rowIndex in rows" :key="`col-${rowIndex}`">
           <TileComponent
@@ -37,14 +51,23 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import TileComponent from "./TileComponent.vue";
+import ConfirmationComponent from "../ConfirmationComponent.vue";
 import TimerModel from "../../models/TimerModel";
 import DragDropModel from "@/models/DragDropModel";
+import { mapGetters } from "vuex";
+import ResultModel from "@/models/ResultModel";
+import resultsService from "@/services/resultsService";
+import { AfterLogInEvent } from "@/enums/AfterLogInEvent";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 export default defineComponent({
   name: "BoardComponent",
 
   components: {
     TileComponent,
+    ConfirmationComponent,
   },
 
   props: {
@@ -63,7 +86,15 @@ export default defineComponent({
     isLogInModalVisiable: {
       default: false,
       type: Boolean,
-    }
+    },
+    isResultsModalVisiable: {
+      default: false,
+      type: Boolean,
+    },
+    canSaveResult: {
+      default: false,
+      type: Boolean,
+    },
   },
 
   data() {
@@ -78,12 +109,16 @@ export default defineComponent({
       timerObj: new TimerModel(0, 0, 0),
       timer: 0,
       timerString: "00:00:00",
+      showConfirmation: false,
     };
   },
 
+  computed: {
+    ...mapGetters(["user", "isLoggedIn"]),
+  },
+
   mounted() {
-    // this.generateRandomArray(this.$props.maxTileNumber);
-    this.tileOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 11, 13, 14, 12, null];
+    this.generateRandomArray(this.$props.maxTileNumber);
   },
 
   watch: {
@@ -91,23 +126,23 @@ export default defineComponent({
       handler() {
         if (this.puzzleSolved) {
           clearInterval(this.timer);
-          this.timerString = "00:00:00";
         }
       },
     },
 
-    isLogInModalVisiable: {
+    canSaveResult: {
       handler() {
-        if (this.$props.isLogInModalVisiable) {
-          this.reset();
+        if (this.$props.canSaveResult) {
+          this.saveResult();
         }
       },
-    }
+    },
   },
 
   methods: {
     start(): void {
       if (!this.gameOn) {
+        this.reset();
         this.gameOn = true;
         this.gameStopped = false;
         this.timer = setInterval(this.upTimer, 1000);
@@ -136,11 +171,29 @@ export default defineComponent({
     },
 
     generateRandomArray(size: number): void {
-      while (this.tileOrder.length < size) {
-        var r = Math.floor(Math.random() * size) + 1;
-        if (this.tileOrder.indexOf(r) === -1) this.tileOrder.push(r);
-      }
-      this.tileOrder.push(null);
+      this.tileOrder = [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        15,
+        11,
+        13,
+        14,
+        12,
+        null,
+      ];
+      // while (this.tileOrder.length < size) {
+      //   var r = Math.floor(Math.random() * size) + 1;
+      //   if (this.tileOrder.indexOf(r) === -1) this.tileOrder.push(r);
+      // }
+      // this.tileOrder.push(null);
     },
 
     dragStart(dragDropModel: DragDropModel): void {
@@ -233,6 +286,35 @@ export default defineComponent({
         );
       }
       return false;
+    },
+
+    async saveButtonConfirmed() {
+      if (!this.isLoggedIn) {
+        this.$emit("showLogInModal", AfterLogInEvent.AddResult);
+      } else {
+        await this.saveResult();
+      }
+      this.showConfirmation = false;
+    },
+
+    async saveResult() {
+      const resultModel = new ResultModel(
+        this.user.id,
+        this.turns,
+        this.timerString
+      );
+      try {
+        await resultsService.addResult(resultModel);
+      } catch (e: any) {
+        toast.error(e, {
+          timeout: 3000,
+        });
+      }
+
+      toast.success("Result was successfully saved", {
+        timeout: 3000,
+      });
+      this.$emit('refreshResults');
     },
   },
 });

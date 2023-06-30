@@ -1,7 +1,9 @@
 export default class DragDropModel {
-    index: number|null;
-    row: number|null;
-    col: number|null;
+    public index: number|null;
+
+    public row: number|null;
+    
+    public col: number|null;
 
     constructor(
         index: number|null,

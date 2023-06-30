@@ -2,9 +2,7 @@
   <div class="log-in-wrapper">
     <div class="form-container">
       <div class="close-btn-container">
-        <button
-            @click="close"
-            class="close-btn">&#10006;</button>
+        <button @click="close" class="close-btn">&#10006;</button>
       </div>
       <div class="header">
         <h2>Log In</h2>
@@ -12,14 +10,34 @@
       <div class="main-container">
         <div class="username-container">
           <label for="username">Username</label>
-          <input type="text" id="username" placeholder="Enter username" />
+          <input
+            type="text"
+            v-model="username"
+            id="username"
+            placeholder="Enter username"
+          />
+          <span v-if="!username" class="error">Required</span>
         </div>
         <div class="password-container">
           <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Enter password" />
+          <input
+            type="password"
+            v-model="password"
+            id="password"
+            placeholder="Enter password"
+          />
+          <span v-if="!password" class="error">Required</span>
+          <span v-if="passwordInvalid" class="error">Invalid password</span>
         </div>
         <div class="log-in-btn-container">
-          <button class="log-in-btn puzzle-btn" type="submit">Log In</button>
+          <button
+            class="log-in-btn puzzle-btn"
+            @click="logIn"
+            :disabled="!username || !password"
+            type="submit"
+          >
+            Log In
+          </button>
         </div>
       </div>
     </div>
@@ -27,16 +45,66 @@
 </template>
 
 <script lang="ts">
+import { UserModel } from "@/models/interfaces/UserModel";
+import LogInModel from "@/models/LogInModel";
+import authService from "@/services/authService";
 import { defineComponent } from "vue";
+import { mapActions } from "vuex";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 export default defineComponent({
-    name: 'LogInComponent',
-    
-    methods: {
-        close(): void {
-            this.$emit('closeLogInModal');
+  name: "LogInComponent",
+  data() {
+    return {
+      username: "",
+      password: "",
+      passwordInvalid: false,
+    };
+  },
+
+  props: {
+    showResultsModalAfter: {
+      default: false,
+      type: Boolean,
+    },
+    saveResultAfter: {
+      default: false,
+      type: Boolean,
+    },
+  },
+
+  methods: {
+    ...mapActions(["changeUser"]),
+
+    close(): void {
+      this.$emit("closeLogInModal");
+    },
+
+    async logIn(): Promise<void> {
+      const logInModel = new LogInModel(this.username, this.password);
+      try {
+        const user = (await authService.logIn(logInModel)) as UserModel;
+        this.changeUser(user);
+      } catch (e: any) {
+        if (e.response && e.response.status === 401) {
+          this.passwordInvalid = true;
+        } else {
+          toast.error(e, {
+            timeout: 3000
+          })
         }
-    }
+        return;
+      }
+      if (this.showResultsModalAfter) {
+        this.$emit("showResultsModal");
+      } else if (this.saveResultAfter) {
+        this.$emit("saveResult");
+      }
+      this.close();
+    },
+  },
 });
 </script>
 
@@ -54,7 +122,7 @@ export default defineComponent({
   flex-direction: column;
   align-items: center;
   width: 600px;
-  height: 370px;
+  height: 400px;
   border-radius: 10px;
   border: 1px solid rgb(113, 127, 191);
   align-items: stretch;
@@ -68,7 +136,7 @@ export default defineComponent({
   align-items: center;
   height: 80px;
   width: 100%;
-  background-color: aliceblue;
+  background-color: transparent;
   border-radius: 10px 10px 0 0;
   font-weight: 500;
   color: rgb(28, 59, 194);
@@ -121,22 +189,5 @@ export default defineComponent({
 ::v-deep #log-in-btn:hover {
   border-color: rgb(36, 75, 229) !important;
   box-shadow: rgba(136, 234, 225, 0.966) 0 0 1px 1px !important;
-}
-
-.close-btn {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  height: 30px;
-  width: 30px;
-  font-size: 22px;
-  background-color: transparent;
-  border: none;
-  color: rgb(180, 40, 30);
-}
-
-.close-btn:hover {
-  cursor: pointer;
-  font-size: 24px;
 }
 </style>

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using _15PuzzleGame;
 
@@ -11,9 +12,10 @@ using _15PuzzleGame;
 namespace _15PuzzleGame.Migrations
 {
     [DbContext(typeof(PuzzleContext))]
-    partial class PuzzleContextModelSnapshot : ModelSnapshot
+    [Migration("20230629064704_AddUserPasswordHashAndSalt")]
+    partial class AddUserPasswordHashAndSalt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -83,8 +83,8 @@ export default defineComponent({
 
 <style scoped>
   #tile {
-    height: 123.4px;
-    width: 123.4px;
+    height: 122.6px;
+    width: 122.6px;
     border: 1px solid rgb(54, 88, 225);
     display: flex;
     justify-content: center;
